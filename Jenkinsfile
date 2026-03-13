@@ -55,7 +55,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "pm16/ead-todo-app:latest" 
+        IMAGE_NAME = "pm16/ead-todo-app:1.0" 
     }
 
     stages {

@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "your-username/finead-todo-app:latest" 
+        IMAGE_NAME = "pm16/mern-todo-app:latest" 
     }
 
     stages {

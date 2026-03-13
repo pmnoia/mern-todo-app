@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDS = credentials('dockerhub-credentials')
-        IMAGE_NAME = "pm16/mern-todo-app:latest"
+        IMAGE_NAME = "pm16/ead-todo-app:latest"
     }
 
     stages {

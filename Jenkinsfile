@@ -2,19 +2,21 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "pm16/mern-todo-app:latest" 
+        DOCKERHUB_CREDS = credentials('dockerhub-credentials')
+        IMAGE_NAME = "pm16/mern-todo-app:latest"
     }
 
     stages {
-        stage('1. Checkout') {
+        stage('1. Checkout Code') {
             steps {
-                echo 'Pulling code from repository...'
+                echo 'Pulling the latest code from GitHub...'
                 checkout scm
             }
         }
 
         stage('2. Build') {
             steps {
+                // Navigating to the appropriate folder to install dependencies
                 dir('TODO/todo_backend') {
                     echo 'Installing npm dependencies...'
                     sh 'npm install'
@@ -22,7 +24,7 @@ pipeline {
             }
         }
 
-        stage('3. Containerise') {
+        stage('3. Containerize') {
             steps {
                 dir('TODO/todo_backend') {
                     echo 'Building the Docker image...'
@@ -31,18 +33,14 @@ pipeline {
             }
         }
 
-        stage('4. Push') {
+        stage('4. Push to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DHUB_PASS', usernameVariable: 'DHUB_USER')]) {
-                    
-                    echo 'Logging into Docker Hub securely...'
-                    sh 'echo "$DHUB_PASS" | docker login -u "$DHUB_USER" --password-stdin'
-                    
-                    echo 'Pushing image to Docker Hub...'
-                    sh "docker push ${IMAGE_NAME}"
-                }
+                echo 'Logging into DockerHub...'
+                sh "echo \$DOCKERHUB_CREDS_PSW | docker login -u \$DOCKERHUB_CREDS_USR --password-stdin"
                 
-                // Clean up
+                echo 'Pushing image to repository...'
+                sh "docker push ${IMAGE_NAME}"
+
                 sh "docker logout"
             }
         }

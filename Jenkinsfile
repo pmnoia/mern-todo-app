@@ -2,29 +2,28 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDS = credentials('dockerhub-credentials')
-        IMAGE_NAME = "pm16/ead-todo-app:1.0"
+        IMAGE_NAME = "pm16/finead-todo-app:1.0" 
     }
 
     stages {
-        stage('1. Checkout Code') {
+        stage('1. Checkout') {
             steps {
-                echo 'Pulling the latest code from GitHub...'
+                echo 'Pulling code from repository...'
                 checkout scm
             }
         }
 
         stage('2. Build') {
             steps {
-                // Navigating to the appropriate folder to install dependencies
                 dir('TODO/todo_backend') {
-                    echo 'Installing npm dependencies...'
-                    sh 'npm install'
+                    echo 'Using Docker to install npm dependencies...'
+                    // This creates a temporary Node container just to run npm install!
+                    sh 'docker run --rm -v "$(pwd):/app" -w /app node:22-alpine npm install'
                 }
             }
         }
 
-        stage('3. Containerize') {
+        stage('3. Containerise') {
             steps {
                 dir('TODO/todo_backend') {
                     echo 'Building the Docker image...'
